@@ -10,6 +10,10 @@
 	
 	<include package="nti.messaging" />
 
+	<utility factory=".generations.install._SchemaManager"
+			 name="nti.dataserver-app-messaging"
+			 provides="zope.generations.interfaces.IInstallableSchemaManager" />
+
 	<!-- ACL -->
 	<adapter factory=".acl.MessageACLProvider"
 			 for="nti.messaging.interfaces.IMessage"
