@@ -77,9 +77,9 @@ class ConversationProvider(object):
         self.mailbox = mailbox
 
     def conversation_for_toplevel(self, root, user=None):
-        return Conversation(root,
-                            self.mailbox,
-                            chain(root.referents, (root,)),
+        return Conversation(self.mailbox,
+                            root,
+                            chain(root.referents or (), (root,)),
                             user=user)
 
     def conversations(self, user=None):

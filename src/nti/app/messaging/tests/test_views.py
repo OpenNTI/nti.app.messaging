@@ -290,3 +290,53 @@ class TestMessagingViews(ApplicationLayerTest):
         self.testapp.get(href,
                          status=403,
                          extra_environ=self._make_extra_environ(username="rukia"))
+        
+    @WithSharedApplicationMockDS(users=True, testapp=True)
+    def test_conversations(self):
+        with mock_dataserver.mock_db_trans(self.ds):
+            self._create_user('ichigo')
+            self._create_user('aizen')
+            self._create_user('rukia')
+            self._create_user('kenpachi')
+
+        with mock_dataserver.mock_db_trans(self.ds):
+            message = self._new_messsage("ichigo", ["aizen"], subject="first12")
+            mid = message.id
+
+            # rukia only has sent messages
+            self._new_messsage("rukia", ["ichigo"], subject="first31")
+            self._new_messsage("rukia", ["aizen"], subject="first32")
+
+            # kenpachi only has received messages.
+            self._new_messsage("ichigo", ["kenpachi"], subject="first14")
+            self._new_messsage("aizen", ["kenpachi"], subject="first24")
+            self._new_messsage("rukia", ["kenpachi"], subject="first34")
+
+        href = "/dataserver2/users/%s/mailbox/Sent/%s/@@reply" % ("ichigo", mid)
+        self._reply(href, "aizen", ["ichigo"], subject="second12")
+        self._reply(href, "ichigo", ["aizen"], subject="third12")
+        self._reply(href, "ichigo", ["aizen"], subject="fourth12")
+
+        href = "/dataserver2/users/%s/mailbox/@@conversations" % "ichigo"
+        result = self.testapp.get(href, 
+                                  status=200, 
+                                  extra_environ=self._make_extra_environ(username="ichigo"))
+        assert_that(result.json_body['Items'], has_length(3))
+
+        href = "/dataserver2/users/%s/mailbox/@@conversations" % "aizen"
+        result = self.testapp.get(href, 
+                                  status=200, 
+                                  extra_environ=self._make_extra_environ(username="aizen"))
+        assert_that(result.json_body['Items'], has_length(3))
+
+        href = "/dataserver2/users/%s/mailbox/@@conversations" % "rukia"
+        result = self.testapp.get(href, 
+                                  status=200, 
+                                  extra_environ=self._make_extra_environ(username="rukia"))
+        assert_that(result.json_body['Items'], has_length(3))
+
+        href = "/dataserver2/users/%s/mailbox/@@conversations" % "kenpachi"
+        result = self.testapp.get(href, 
+                                  status=200, 
+                                  extra_environ=self._make_extra_environ(username="kenpachi"))
+        assert_that(result.json_body['Items'], has_length(3))
