@@ -12,6 +12,7 @@ from hamcrest import none
 from hamcrest import is_not
 from hamcrest import has_item
 from hamcrest import has_entry
+from hamcrest import has_items
 from hamcrest import has_length
 from hamcrest import assert_that
 from hamcrest import has_entries
@@ -201,7 +202,8 @@ class TestMessagingViews(ApplicationLayerTest):
             assert_that(received_messages, has_length(1))
             assert_that(received_messages[0].ViewDate, is_(none()))
             mid = received_messages[0].Message.id
-        href = "/dataserver2/users/%s/mailbox/Received/%s/@@opened" % ("aizen", mid)
+        href = "/dataserver2/users/%s/mailbox/Received/%s/@@opened" % (
+            "aizen", mid)
 
         # can't viewed the others' HousingReceivedMessages
         self.testapp.post_json(href, {},
@@ -225,3 +227,66 @@ class TestMessagingViews(ApplicationLayerTest):
         self.testapp.post_json(href, {},
                                status=422,
                                extra_environ=self._make_extra_environ(username="aizen"))
+
+    def _reply(self, reply_url, from_username, to_username, subject="second"):
+        ext_obj = {
+            "Subject": subject,
+            "From": from_username,
+            "To": [to_username] if not isinstance(to_username, list) else to_username,
+            "body": "how are you",
+            "MimeType": "application/vnd.nextthought.messaging.peertopeermessage"
+        }
+        self.testapp.post_json(reply_url,
+                               ext_obj,
+                               status=201,
+                               extra_environ=self._make_extra_environ(username=from_username))
+
+    @WithSharedApplicationMockDS(users=True, testapp=True)
+    def test_thread(self):
+        with mock_dataserver.mock_db_trans(self.ds):
+            self._create_user('ichigo')
+            self._create_user('aizen')
+            self._create_user('rukia')
+
+        # create a rooting Message
+        with mock_dataserver.mock_db_trans(self.ds):
+            message = self._new_messsage("ichigo", ["aizen"], subject="first")
+            mid = message.id
+
+        href = "/dataserver2/users/%s/mailbox/Sent/%s/@@reply" % ("ichigo", mid)
+        self._reply(href, "aizen", ["ichigo"], subject="second")
+        self._reply(href, "ichigo", ["aizen"], subject="third")
+        self._reply(href, "aizen", ["ichigo"], subject="fourth")
+        self._reply(href, "aizen", ["ichigo"], subject="fifth")
+
+        href = "/dataserver2/users/%s/mailbox/Sent/%s/@@thread" % ("ichigo", mid)
+        result = self.testapp.get(href,
+                                  status=200,
+                                  extra_environ=self._make_extra_environ(username="ichigo"))
+        assert_that(result.json_body['Total'], is_(5))
+        subjects = [x['Subject'] for x in result.json_body['Items']]
+        assert_that(subjects,
+                    has_items(u'first',
+                              u'second',
+                              u'third',
+                              u'fourth',
+                              u'fifth'))
+
+        result = self.testapp.get(href,
+                                  status=200,
+                                  extra_environ=self._make_extra_environ(username="aizen"))
+        assert_that(result.json_body['Total'], is_(5))
+        subjects = [x['Subject'] for x in result.json_body['Items']]
+        assert_that(subjects,
+                    has_items(u'first',
+                              u'second',
+                              u'third',
+                              u'fourth',
+                              u'fifth'))
+
+        self.testapp.get(href,
+                         status=401,
+                         extra_environ=self._make_extra_environ(username=None))
+        self.testapp.get(href,
+                         status=403,
+                         extra_environ=self._make_extra_environ(username="rukia"))
