@@ -1,0 +1,41 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	  xmlns:metal="http://xml.zope.org/namespaces/metal"
+	  xmlns:tal="http://xml.zope.org/namespaces/tal">
+	<head>
+		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+		<title></title>
+		<style metal:use-macro="macro:messaging_style">
+		</style>
+		<style>
+			.body-content .body{
+				white-space: pre-wrap;
+				word-wrap: break-word;
+				word-break: break-word;
+			}
+
+			.content p{
+				margin-bottom: 0px;
+			}
+
+			.body-content{
+				padding-bottom: 1em;
+			}
+
+		</style>
+	</head>
+	<body>
+		<table metal:use-macro="macro:messaging_header"/>
+		<div class="content">
+			<p class="greeting"><span tal:content="options/receiver/informal_name">Student</span>,</p>
+			<div class="body-content">
+				<div class="body"
+					tal:condition="options/message" tal:content="structure options/message"></div>
+				<div class="no-message" tal:condition="not: options/message">You have a new message.</div>
+			</div>
+			<span tal:content="options/sender/informal_name">Student</span>
+		</div>
+
+		<p metal:use-macro="macro:messaging_footer"/>
+	</body>
+</html>

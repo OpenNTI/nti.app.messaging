@@ -1,0 +1,49 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	  xmlns:metal="http://xml.zope.org/namespaces/metal"
+	  xmlns:tal="http://xml.zope.org/namespaces/tal">
+	<head>
+		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+		<title></title>
+
+		<style metal:define-macro="messaging_style" type="text/css">
+
+		td[class="headercell"] img {
+		    	width: 50%;
+		    	height: auto;
+		    	display: block;
+		    	max-width: 480px;
+		}
+
+		/* There is no indication taht media query works anywhere inside of email. */
+		@media only screen and (max-device-width: 480px) {
+			td[class="headercell"] img {
+		    	width: 80% !important;
+			}
+		}
+		</style>
+	</head>
+	<body>
+		<table metal:define-macro="messaging_header" cellpadding="0" cellspacing="0" tbody="" width="100%">
+			<tbody>
+				<tr>
+					<td align="center" class="headercell">
+						<font face="Verdana">
+							<img src="https://s3.amazonaws.com/ou-messaging.nextthought.com/email/OU_messaging_and_Food_large.png" />&nbsp;
+						</font>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<p><span tal:content="options/receiver/informal_name"></span>,</p>
+
+		<p tal:condition="options/message" tal:content="structure options/message"></p>
+		<p tal:condition="not: options/message">You have a new message.</p>
+
+		<p><br />
+		<span tal:content="options/sender/informal_name"></span></p>
+
+		<p metal:define-macro="messaging_footer">To respond to this message please log back into <a href="https://nextthought.com" tal:attributes="href request/application_url">contract</a> and click on the message icon in the top right corner. <strong> If you just hit reply, your email is stored in a file labeled "Didn’t Read Instructions" for the rest of your University career. Your permanent file. (Yes, it really exists.) </strong></p>
+	</body>
+</html>
