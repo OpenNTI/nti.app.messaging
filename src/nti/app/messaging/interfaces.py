@@ -13,11 +13,40 @@ from zope import interface
 
 from zope.security.interfaces import IPrincipal
 
+from nti.messaging.interfaces import IMessage
+from nti.messaging.interfaces import IMessageBase
+from nti.messaging.interfaces import IReceivedMessageNotifier
+
+from nti.schema.field import Bool
 from nti.schema.field import Number
 from nti.schema.field import Object
 from nti.schema.field import ListOrTuple
+from nti.schema.field import Text as ValidText
 
-from nti.messaging.interfaces import IMessage
+
+class ISummarized(interface.Interface):
+
+    Summary = ValidText(title="Summary of the object")
+
+
+class IMessageSummary(IMessageBase, ISummarized):
+    pass
+
+
+class IEmailMessageNotifier(IReceivedMessageNotifier):
+    pass
+
+
+class IMessageNotificationSettings(interface.Interface):
+
+    SendEmail = Bool(title="Whether to send ", default=True)
+
+    def notifiers_for_message(recv_msg):
+        """
+        List of notifiers to used based on received message 
+        and notification settings
+        """
+        pass
 
 
 class IConversation(interface.Interface):
