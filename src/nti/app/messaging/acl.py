@@ -12,6 +12,8 @@ logger = __import__('logging').getLogger(__name__)
 from zope import component
 from zope import interface
 
+from zope.cachedescriptors.property import Lazy
+
 from zope.security.interfaces import IPrincipal
 
 from nti.dataserver import authorization as nauth
@@ -27,8 +29,6 @@ from nti.dataserver.interfaces import IACLProvider
 from nti.messaging.interfaces import IMailbox
 from nti.messaging.interfaces import IMessage
 from nti.messaging.interfaces import IReceivedMessageContainer
-
-from nti.property.property import Lazy
 
 READ_CREATE_UPDATE = (nauth.ACT_READ, nauth.ACT_UPDATE, nauth.ACT_CREATE)
 CRUD_PERMISSIONS = READ_CREATE_UPDATE + (nauth.ACT_DELETE,)

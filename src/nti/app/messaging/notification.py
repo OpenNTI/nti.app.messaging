@@ -14,6 +14,8 @@ import nameparser
 from zope import component
 from zope import interface
 
+from zope.cachedescriptors.property import Lazy
+
 from pyramid.renderers import render
 
 from pyramid.threadlocal import get_current_request
@@ -40,8 +42,6 @@ from nti.dataserver.users.interfaces import IFriendlyNamed
 from nti.dublincore.datastructures import PersistentCreatedModDateTrackingObject
 
 from nti.mailer.interfaces import IEmailAddressable
-
-from nti.property.property import Lazy
 
 from nti.schema.schema import SchemaConfigured
 
