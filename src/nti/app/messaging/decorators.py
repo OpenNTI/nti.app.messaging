@@ -4,7 +4,7 @@
 .. $Id: decorators.py 106445 2017-02-14 00:54:23Z carlos.sanchez $
 """
 
-from __future__ import print_function, unicode_literals, absolute_import, division
+from __future__ import print_function, absolute_import, division
 __docformat__ = "restructuredtext en"
 
 logger = __import__('logging').getLogger(__name__)
@@ -24,8 +24,6 @@ from nti.dataserver.interfaces import IUser
 from nti.externalization.interfaces import StandardExternalFields
 from nti.externalization.interfaces import IExternalMappingDecorator
 
-from nti.externalization.externalization import to_external_ntiid_oid
-
 from nti.links.links import Link
 
 from nti.messaging import MAILBOX
@@ -33,6 +31,8 @@ from nti.messaging import MAILBOX
 from nti.messaging.interfaces import IMailbox
 from nti.messaging.interfaces import IMessage
 from nti.messaging.interfaces import IReceivedMessage
+
+from nti.ntiids.oids import to_external_ntiid_oid
 
 ID = StandardExternalFields.ID
 LINKS = StandardExternalFields.LINKS
@@ -85,7 +85,7 @@ class ConversationDecorator(AbstractRequestAwareDecorator):
                     elements=('@@thread',))
         link_belongs_to_context(link, context)
         _links.append(link)
-        
+
         message = context.RootMessage
         if message is not None:
             external[ID] = to_external_ntiid_oid(message)
