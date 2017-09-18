@@ -21,7 +21,7 @@ from nti.dataserver.interfaces import ISystemUserPrincipal
 
 from nti.dataserver.interfaces import SYSTEM_USER_ID
 
-from nti.dataserver.users import User
+from nti.dataserver.users.users import User
 
 from nti.messaging import SYSTEM_MAILBOX_KEY
 

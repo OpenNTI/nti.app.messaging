@@ -13,7 +13,7 @@ from hamcrest import same_instance
 
 from zope.security.interfaces import IPrincipal
 
-from nti.dataserver.users import User
+from nti.dataserver.users.users import User
 
 from nti.messaging.interfaces import IMailbox
 

@@ -35,9 +35,9 @@ from nti.appserver.policies.interfaces import ISitePolicyUserEventListener
 
 from nti.dataserver.interfaces import IUser
 
-from nti.dataserver.users import User
-
 from nti.dataserver.users.interfaces import IFriendlyNamed
+
+from nti.dataserver.users.users import User
 
 from nti.dublincore.datastructures import PersistentCreatedModDateTrackingObject
 
